@@ -37,16 +37,25 @@ def init_db():
         )
     ''')
     
+    # Таблица посещений
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS visits (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             painting_id INTEGER,
             visit_time TIMESTAMP,
             duration_seconds INTEGER,
+            user_id TEXT,
             FOREIGN KEY (painting_id) REFERENCES paintings (id)
         )
     ''')
     
+    # Проверяем, есть ли колонка user_id (для старых БД)
+    cursor.execute("PRAGMA table_info(visits)")
+    columns = [col[1] for col in cursor.fetchall()]
+    if 'user_id' not in columns:
+        cursor.execute("ALTER TABLE visits ADD COLUMN user_id TEXT")
+    
+    # Заполнение тестовыми данными, если таблица картин пуста
     cursor.execute('SELECT COUNT(*) FROM paintings')
     if cursor.fetchone()[0] == 0:
         paintings_data = [
@@ -66,47 +75,25 @@ def init_db():
              "Постимпрессионизм",
              "Post-Impressionism",
              20, 30, 15234, 7.2)
-            
-            # ("Мона Лиза", "Леонардо да Винчи", 1503,
-            #  "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Mona_Lisa%2C_by_Leonardo_da_Vinci%2C_from_C2RMF_retouched.jpg/1200px-Mona_Lisa%2C_by_Leonardo_da_Vinci%2C_from_C2RMF_retouched.jpg",
-            #  "Портрет Лизы Герардини, жены Франческо дель Джокондо. Самая известная картина в мире.",
-            #  65, 45, 25000, 12.5),
-            
-            # ("Девушка с жемчужной серёжкой", "Ян Вермеер", 1665,
-            #  "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/1665_Girl_with_a_Pearl_Earring.jpg/1200px-1665_Girl_with_a_Pearl_Earring.jpg",
-            #  "Часто называемая «Северной Моной Лизой». Шедевр голландской живописи XVII века.",
-            #  80, 20, 12456, 5.1),
-            
-            # ("Крик", "Эдвард Мунк", 1893,
-            #  "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Edvard_Munch%2C_1893%2C_The_Scream%2C_oil%2C_tempera_and_pastel_on_cardboard%2C_91_x_73_cm%2C_National_Gallery_of_Norway.jpg/1200px-Edvard_Munch%2C_1893%2C_The_Scream%2C_oil%2C_tempera_and_pastel_on_cardboard%2C_91_x_73_cm%2C_National_Gallery_of_Norway.jpg",
-            #  "Самая известная работа Мунка и один из самых узнаваемых образов в искусстве.",
-            #  40, 70, 11203, 4.8),
-            
-            # ("Ночной дозор", "Рембрандт", 1642,
-            #  "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/The_Nightwatch_by_Rembrandt_-_Rijksmuseum.jpg/1200px-The_Nightwatch_by_Rembrandt_-_Rijksmuseum.jpg",
-            #  "Одно из самых известных произведений Рембрандта. Групповой портрет стрелковой роты.",
-            #  55, 55, 9876, 8.3),
-            
-            # ("Рождение Венеры", "Сандро Боттичелли", 1485,
-            #  "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/Sandro_Botticelli_-_La_nascita_di_Venere_-_Google_Art_Project_-_edited.jpg/1200px-Sandro_Botticelli_-_La_nascita_di_Venere_-_Google_Art_Project_-_edited.jpg",
-            #  "Одна из самых знаменитых картин итальянского Возрождения. Изображает богиню Венеру.",
-            #  30, 40, 8765, 6.7)
         ]
         cursor.executemany('''
             INSERT INTO paintings (title_ru, title_en, author_ru, author_en, year, image_uri, description_ru, description_en, facts_ru, facts_en, drawing_technique_ru, drawing_technique_en, dimensions, art_direction_ru, art_direction_en, map_x, map_y, views, avg_time)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ''', paintings_data)
         
-        for i in range(1, 7):
-            for _ in range(random.randint(50, 200)):
-                visit_time = datetime.now() - timedelta(days=random.randint(0, 30), 
-                                                        hours=random.randint(0, 23),
-                                                        minutes=random.randint(0, 59))
-                duration = random.randint(60, 600)
-                cursor.execute('''
-                    INSERT INTO visits (painting_id, visit_time, duration_seconds)
-                    VALUES (?, ?, ?)
-                ''', (i, visit_time, duration))
+        # Генерация тестовых посещений с user_id
+        # user_ids = [f"user_{i}" for i in range(1, 21)]  # 20 уникальных пользователей
+        # for i in range(1, 7):  # для 6 картин
+        #     for _ in range(random.randint(50, 200)):
+        #         visit_time = datetime.now() - timedelta(days=random.randint(0, 30), 
+        #                                                 hours=random.randint(0, 23),
+        #                                                 minutes=random.randint(0, 59))
+        #         duration = random.randint(60, 600)
+        #         user_id = random.choice(user_ids)
+        #         cursor.execute('''
+        #             INSERT INTO visits (painting_id, visit_time, duration_seconds, user_id)
+        #             VALUES (?, ?, ?, ?)
+        #         ''', (i, visit_time, duration, user_id))
     
     conn.commit()
     conn.close()
@@ -140,29 +127,81 @@ def get_painting(painting_id):
 
 @app.route('/api/stats')
 def get_stats():
+    range_param = request.args.get('range', 'month')
     conn = get_db_connection()
     
-    total_visits = conn.execute('SELECT COUNT(*) FROM visits').fetchone()[0]
+    # Определяем временной фильтр
+    date_filter = ""
+    if range_param == 'today':
+        date_filter = "WHERE visit_time >= date('now')"
+    elif range_param == 'week':
+        date_filter = "WHERE visit_time >= datetime('now', '-7 days')"
+    elif range_param == 'month':
+        date_filter = "WHERE visit_time >= datetime('now', '-30 days')"
+    elif range_param == 'year':
+        date_filter = "WHERE visit_time >= datetime('now', '-1 year')"
+    # else 'all' – без фильтра
     
-    unique_users = conn.execute('SELECT COUNT(DISTINCT visit_time) FROM visits').fetchone()[0]
+    # 1. Общее количество посещений
+    total_visits = conn.execute(f'''
+        SELECT COUNT(*) FROM visits
+        {date_filter}
+    ''').fetchone()[0]
     
-    popular = conn.execute('''
-        SELECT p.id, p.title_ru, p.author_ru, p.views, p.avg_time
+    # 2. Уникальные пользователи
+    unique_users = conn.execute(f'''
+        SELECT COUNT(DISTINCT user_id) FROM visits
+        {date_filter}
+    ''').fetchone()[0]
+    
+    # 3. Средняя длительность просмотра (секунды)
+    avg_duration = conn.execute(f'''
+        SELECT AVG(duration_seconds) FROM visits
+        {date_filter}
+    ''').fetchone()[0] or 0
+    
+    # 4. Среднее количество картин на пользователя
+    paintings_per_user = 0
+    if unique_users > 0:
+        paintings_per_user = total_visits / unique_users
+    
+    # 5. Популярные картины по количеству просмотров
+    popular = conn.execute(f'''
+        SELECT p.id, p.title_ru, p.title_en, p.author_ru, p.author_en, COUNT(v.id) as view_count
         FROM paintings p
-        ORDER BY p.views DESC
+        LEFT JOIN visits v ON p.id = v.painting_id
+        {date_filter.replace('WHERE', 'AND') if date_filter else ''}
+        GROUP BY p.id
+        ORDER BY view_count DESC
         LIMIT 5
     ''').fetchall()
     
-    hourly_stats = conn.execute('''
+    # 6. Картины по задержке внимания (среднее время просмотра)
+    attention = conn.execute(f'''
+        SELECT p.id, p.title_ru, p.title_en, p.author_ru, p.author_en, AVG(v.duration_seconds) as avg_duration
+        FROM paintings p
+        JOIN visits v ON p.id = v.painting_id
+        {date_filter.replace('WHERE', 'AND') if date_filter else ''}
+        GROUP BY p.id
+        ORDER BY avg_duration DESC
+        LIMIT 5
+    ''').fetchall()
+    
+    # 7. Почасовая статистика
+    hourly_stats = conn.execute(f'''
         SELECT strftime('%H', visit_time) as hour, COUNT(*) as count
         FROM visits
-        WHERE visit_time > datetime('now', '-7 days')
+        {date_filter}
         GROUP BY hour
         ORDER BY hour
     ''').fetchall()
     
+    # 8. Средний маршрут (заглушка – можно заменить реальными данными)
+    average_route = ["Зал импрессионистов", "Классическая живопись", "Современное искусство", "Скульптуры"]
+    
     conn.close()
     
+    # Подготовка данных для часов
     hours = [f"{h:02d}:00" for h in range(24)]
     visit_counts = [0] * 24
     for stat in hourly_stats:
@@ -172,8 +211,26 @@ def get_stats():
     return jsonify({
         "total_visits": total_visits,
         "unique_users": unique_users,
-        "popular_paintings": [dict(row) for row in popular],
-        "hourly_stats": {"labels": hours, "data": visit_counts}
+        "avg_duration_seconds": round(avg_duration, 1),
+        "paintings_per_user": round(paintings_per_user, 2),
+        "popular_paintings": [{
+            "id": row["id"],
+            "title_ru": row["title_ru"],
+            "title_en": row["title_en"],
+            "author_ru": row["author_ru"],
+            "author_en": row["author_en"],
+            "views": row["view_count"]
+        } for row in popular],
+        "attention_paintings": [{
+            "id": row["id"],
+            "title_ru": row["title_ru"],
+            "title_en": row["title_en"],
+            "author_ru": row["author_ru"],
+            "author_en": row["author_en"],
+            "avg_duration_minutes": round(row["avg_duration"] / 60, 1) if row["avg_duration"] else 0
+        } for row in attention],
+        "hourly_stats": {"labels": hours, "data": visit_counts},
+        "average_route": average_route
     })
 
 @app.route('/api/search')
@@ -192,15 +249,19 @@ def log_visit():
     data = request.json
     painting_id = data.get('painting_id')
     duration = data.get('duration', 300)
+    user_id = data.get('user_id', 'anonymous')  # если нет – ставим заглушку
     
     conn = get_db_connection()
     conn.execute('''
-        INSERT INTO visits (painting_id, visit_time, duration_seconds)
-        VALUES (?, datetime('now'), ?)
-    ''', (painting_id, duration))
+        INSERT INTO visits (painting_id, visit_time, duration_seconds, user_id)
+        VALUES (?, datetime('now'), ?, ?)
+    ''', (painting_id, duration, user_id))
+    
+    # Обновляем счётчик просмотров в таблице paintings
     conn.execute('''
         UPDATE paintings SET views = views + 1 WHERE id = ?
     ''', (painting_id,))
+    
     conn.commit()
     conn.close()
     
