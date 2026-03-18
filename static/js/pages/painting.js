@@ -9,13 +9,14 @@ export async function renderPaintingDetail(container, id) {
 
   try {
     const p = await fetchPainting(id);
-    const isRu = currentLang === 'ru';
-    p.title = isRu ? p.title_ru : p.title_en;
-    p.author = isRu ? p.author_ru : p.author_en;
-    p.description = isRu ? p.description_ru : p.description_en;
-    p.drawing_technique = isRu ? p.drawing_technique_ru : p.drawing_technique_en;
-    p.art_direction = isRu ? p.art_direction_ru : p.art_direction_en;
-    const factsRaw = isRu ? p.facts_ru : p.facts_en;
+    const lang = currentLang;
+    
+    p.title = p[`title_${lang}`] || p.title_en;
+    p.author = p[`author_${lang}`] || p.author_en;
+    p.description = p[`description_${lang}`] || p.description_en;
+    p.drawing_technique = p[`drawing_technique_${lang}`] || p.drawing_technique_en;
+    p.art_direction = p[`art_direction_${lang}`] || p.art_direction_en;
+    const factsRaw = p[`facts_${lang}`] || p.facts_en;
     p.facts = parseFacts(factsRaw);
 
     container.innerHTML = `

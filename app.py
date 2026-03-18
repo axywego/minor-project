@@ -17,19 +17,25 @@ def init_db():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             title_ru TEXT NOT NULL,
             title_en TEXT NOT NULL,
+            title_de TEXT NOT NULL,
             author_ru TEXT NOT NULL,
             author_en TEXT NOT NULL,
+            author_de TEXT NOT NULL,
             year INTEGER,
             image_uri TEXT NOT NULL,
             description_ru TEXT NOT NULL,
             description_en TEXT NOT NULL,
+            description_de TEXT NOT NULL,
             facts_ru TEXT NOT NULL,
             facts_en TEXT NOT NULL,
+            facts_de TEXT NOT NULL,
             drawing_technique_ru TEXT NOT NULL,
             drawing_technique_en TEXT NOT NULL,
+            drawing_technique_de TEXT NOT NULL,
             dimensions TEXT NOT NULL,
             art_direction_ru TEXT NOT NULL,
-            art_direction_en TEXT NOT NULL,             
+            art_direction_en TEXT NOT NULL,   
+            art_direction_de TEXT NOT NULL,   
             map_x REAL,
             map_y REAL,
             views INTEGER DEFAULT 0,
@@ -61,24 +67,30 @@ def init_db():
         paintings_data = [
             ("Звёздная ночь",
              "Starry night",
+             "Sternennacht",
              "Винсент Ван Гог",
+             "Vincent van Gogh",
              "Vincent van Gogh",
              1889, 
              "static/images/paintings/Van_Gogh-Starry_Night.jpg",
              "Одна из самых узнаваемых картин в истории западного искусства. Написана в июне 1889 года в лечебнице Сен-Поль-де-Мозоль.",
              "One of the most recognizable paintings in the history of Western art. Painted in June 1889 at the Saint-Paul-de-Mausole asylum.",
+             "Eines der bekanntesten Gemälde in der Geschichte der westlichen Kunst. Entstanden im Juni 1889 in der Nervenheilanstalt Saint-Paul-de-Mausole.",
              "Факт1:сам факт1;Факт2:сам факт2;Факт3:сам факт3;Факт4:сам факт4;",
+             "Fact1:the fact1;Fact2:the fact2;Fact3:the fact3;Fact4:the fact4;",
              "Fact1:the fact1;Fact2:the fact2;Fact3:the fact3;Fact4:the fact4;",
              "Холст, масло",
              "Canvas, oil",
+             "Öl auf Leinwand",
              "73.7 × 91.1",
              "Постимпрессионизм",
              "Post-Impressionism",
+             "Post-Impressionismus",
              20, 30, 15234, 7.2)
         ]
         cursor.executemany('''
-            INSERT INTO paintings (title_ru, title_en, author_ru, author_en, year, image_uri, description_ru, description_en, facts_ru, facts_en, drawing_technique_ru, drawing_technique_en, dimensions, art_direction_ru, art_direction_en, map_x, map_y, views, avg_time)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO paintings (title_ru, title_en, title_de, author_ru, author_en, author_de, year, image_uri, description_ru, description_en, description_de, facts_ru, facts_en, facts_de, drawing_technique_ru, drawing_technique_en, drawing_technique_de, dimensions, art_direction_ru, art_direction_en, art_direction_de, map_x, map_y, views, avg_time)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ''', paintings_data)
         
         # Генерация тестовых посещений с user_id

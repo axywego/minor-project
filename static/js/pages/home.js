@@ -75,18 +75,22 @@ export function renderCarouselSlide(slideIndex) {
   const end = start + PAINTINGS_PER_PAGE;
   const slidePaintings = paintings.slice(start, end);
   const t = translations[currentLang];
+
+  // const title = p[`title_${currentLang}`] || p.title_en;
+  // const author = p[`author_${currentLang}`] || p.author_en;
+
   return `
     <div class="carousel-slide fade-in">
       <div class="paintings-grid">
         ${slidePaintings.map(p => `
           <article class="painting-card" onclick="router('painting', ${p.id})">
             <div class="card-image">
-              <img src="${p.image_uri}" alt="${currentLang === 'ru' ? p.title_ru : p.title_en}">
+              <img src="${p.image_uri}" alt="${ p[`title_${currentLang}`] || p.title_en }">
               <div class="card-overlay"><span class="view-btn">${t['btn.view']}</span></div>
             </div>
             <div class="card-content">
-              <h3 class="card-title">${currentLang === 'ru' ? p.title_ru : p.title_en}</h3>
-              <p class="card-author">${currentLang === 'ru' ? p.author_ru : p.author_en}</p>
+              <h3 class="card-title">${p[`title_${currentLang}`] || p.title_en}</h3>
+              <p class="card-author">${p[`author_${currentLang}`] || p.author_en}</p>
               <p class="card-year">${p.year}</p>
             </div>
           </article>

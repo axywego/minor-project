@@ -17,8 +17,8 @@ export async function renderStats(container, range) {
 
     // Популярные по просмотрам
     const popularPaintings = stats.popular_paintings.map((p, i) => {
-      const title = currentLang === 'ru' ? p.title_ru : p.title_en;
-      const author = currentLang === 'ru' ? p.author_ru : p.author_en;
+      const title = p[`title_${currentLang}`] || p.title_en;
+      const author = p[`author_${currentLang}`] || p.author_en;
       return `<div class="ranking-item" onclick="router('painting', ${p.id})">
         <span class="rank">${i + 1}</span>
         <div class="ranking-info"><span class="ranking-title">${title}</span><span class="ranking-author">${author}</span></div>

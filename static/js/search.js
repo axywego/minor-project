@@ -12,10 +12,13 @@ export function initFuseSearch(paintingsArray) {
     keys: [
       { name: 'title_ru', weight: 2 },
       { name: 'title_en', weight: 2 },
+      { name: 'title_de', weight: 2 },
       { name: 'author_ru', weight: 1.5 },
       { name: 'author_en', weight: 1.5 },
+      { name: 'author_de', weight: 1.5 },
       { name: 'art_direction_ru', weight: 1 },
-      { name: 'art_direction_en', weight: 1 }
+      { name: 'art_direction_en', weight: 1 },
+      { name: 'art_direction_de', weight: 1 }
     ],
     threshold: 0.4,
     distance: 100,
@@ -92,8 +95,8 @@ function renderSearchDropdown(query) {
   } else {
     dropdown.innerHTML = searchResults.map((result, idx) => {
       const p = result.item;
-      const title = currentLang === 'ru' ? p.title_ru : p.title_en;
-      const author = currentLang === 'ru' ? p.author_ru : p.author_en;
+      const title = p[`title_${currentLang}`] || p.title_en;
+      const author = p[`author_${currentLang}`] || p.author_en;
       const highlightedTitle = highlightMatches(title, result.matches, 'title');
       const highlightedAuthor = highlightMatches(author, result.matches, 'author');
       return `
