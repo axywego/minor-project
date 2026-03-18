@@ -38,18 +38,50 @@ export async function renderStats(container, range) {
     }).join('');
 
     // Средний маршрут
-    const routeHtml = stats.average_route.map((step, i) => `
-      <div class="route-step"><span class="step-number">${i + 1}</span><span class="step-text">${step}</span></div>
-      ${i < stats.average_route.length - 1 ? '<div class="route-arrow">↓</div>' : ''}
-    `).join('');
+    const paintingsRoute = stats.average_paintings_route || [];
+    const paintingsRouteHtml = paintingsRoute.map((p, i) => {
+      const title = currentLang === 'ru' ? p.title_ru : p.title_en;
+      return `
+      <div class="route-step" onclick="router('painting', ${p.id})" style="cursor:pointer;">
+        <span class="step-number">${i + 1}</span>
+        <span class="step-text">${title}</span>
+      </div>
+      ${i < paintingsRoute.length - 1 ? '<div class="route-arrow">↓</div>' : ''}
+    `;
+    }).join('');
 
     container.innerHTML = `
       <section class="container" style="display:flex; flex-direction:column; gap:20px;">
+        <button onclick="logout()" class="logout-btn">Exit</button>
         <h1 class="page-title" style="margin-top:50px;">${t['section.stats']}</h1>
-        <div class="stat-card large">...</div>
+        <div class="stat-card large">
+
+            <h2 class="stat-card-title">Общая информация</h2>
+            <div class="stat-content">
+              <div class="stat-big-number">
+                <span class="number">${stats.total_visits.toLocaleString()}</span>
+                <span class="label">Посещений за период</span>
+              </div>
+              <div class="stats-row">
+                <div class="mini-stat">
+                  <span class="mini-number">${stats.unique_users.toLocaleString()}</span>
+                  <span class="mini-label">Уникальных посетителей</span>
+                </div>
+                <div class="mini-stat">
+                  <span class="mini-number">${Math.round(stats.avg_duration_seconds / 60)} мин</span>
+                  <span class="mini-label">Среднее время просмотра</span>
+                </div>
+                <div class="mini-stat">
+                  <span class="mini-number">${stats.paintings_per_user}</span>
+                  <span class="mini-label">Картин за посещение</span>
+                </div>
+              </div>
+          </div>
+        </div>
+
         <div class="stats-grid">
           <div class="stat-card"><h2 class="stat-card-title">🏆 Популярные картины</h2><div class="ranking-list">${popularPaintings || '<p>Нет данных</p>'}</div></div>
-          <div class="stat-card"><h2 class="stat-card-title">📍 Средний маршрут</h2><div class="route-visual">${routeHtml}</div><div class="route-info">...</div></div>
+          <div class="stat-card"><h2 class="stat-card-title">📍 Средний маршрут</h2><div class="route-visual">${paintingsRouteHtml || '<p>Нет данных</p>'}</div><div class="route-info">...</div></div>
         </div>
         <div class="stat-card"><h2 class="stat-card-title">⏱️ По задержке внимания</h2><div class="ranking-list">${attentionPaintings || '<p>Нет данных</p>'}</div></div>
         <div class="stat-card full-width">
@@ -75,7 +107,7 @@ export async function renderStats(container, range) {
   }
 }
 
-window.updateStatsRange = async function(range) {
+window.updateStatsRange = async function (range) {
   const app = document.getElementById('app');
   await renderStats(app, range);
 };

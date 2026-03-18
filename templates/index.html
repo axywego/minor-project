@@ -32,6 +32,18 @@
         </div>
     </header>
 
+    <div id="login-modal" class="modal" style="display: none;">
+        <div class="modal-overlay" onclick="closeModal()"></div>
+        <div class="modal-content">
+            <h3>Вход для администратора</h3>
+            <input type="password" id="admin-password" placeholder="Пароль">
+            <div class="modal-buttons">
+                <button onclick="adminLogin()">Войти</button>
+                <button onclick="closeModal()">Отмена</button>
+            </div>
+        </div>
+    </div>
+
     <main id="app">
         <div class="loader">Загрузка...</div>
     </main>
@@ -56,10 +68,10 @@
             </div>
         </div>
     </footer>
-    
+
     <script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0/dist/fuse.min.js"></script>
     <script type="module" src="/static/js/main.js"></script>
-     <!-- <script src="/static/js/script.js"></script> -->
+    <!-- <script src="/static/js/script.js"></script> -->
 </body>
 
 </html>

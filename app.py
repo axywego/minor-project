@@ -3,9 +3,15 @@ from flask_cors import CORS
 import sqlite3
 import random
 from datetime import datetime, timedelta
+from functools import wraps
+from flask import session
+from collections import defaultdict, Counter
 
 app = Flask(__name__)
+
 CORS(app)
+
+app.secret_key = 'Hxck1bg!8y87#u[b]gh'
 
 def init_db():
     conn = sqlite3.connect('database.db')
@@ -92,20 +98,6 @@ def init_db():
             INSERT INTO paintings (title_ru, title_en, title_de, author_ru, author_en, author_de, year, image_uri, description_ru, description_en, description_de, facts_ru, facts_en, facts_de, drawing_technique_ru, drawing_technique_en, drawing_technique_de, dimensions, art_direction_ru, art_direction_en, art_direction_de, map_x, map_y, views, avg_time)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ''', paintings_data)
-        
-        # Генерация тестовых посещений с user_id
-        # user_ids = [f"user_{i}" for i in range(1, 21)]  # 20 уникальных пользователей
-        # for i in range(1, 7):  # для 6 картин
-        #     for _ in range(random.randint(50, 200)):
-        #         visit_time = datetime.now() - timedelta(days=random.randint(0, 30), 
-        #                                                 hours=random.randint(0, 23),
-        #                                                 minutes=random.randint(0, 59))
-        #         duration = random.randint(60, 600)
-        #         user_id = random.choice(user_ids)
-        #         cursor.execute('''
-        #             INSERT INTO visits (painting_id, visit_time, duration_seconds, user_id)
-        #             VALUES (?, ?, ?, ?)
-        #         ''', (i, visit_time, duration, user_id))
     
     conn.commit()
     conn.close()
@@ -121,12 +113,38 @@ def get_db_connection():
 def index():
     return render_template('index.html')
 
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session.get('admin_logged_in'):
+            return jsonify({"error": "Unauthorized"}), 401
+        return f(*args, **kwargs)
+    return decorated_function
+
+@app.route('/api/login', methods=['POST'])
+def api_login():
+    data = request.json
+    password = data.get('password')
+    if password == 'XxFmh3d9':
+        session['admin_logged_in'] = True
+        return jsonify({"status": "ok"})
+    return jsonify({"error": "Invalid password"}), 401
+
+@app.route('/api/logout', methods=['POST'])
+def api_logout():
+    session.pop('admin_logged_in', None)
+    return jsonify({"status": "ok"})
+
 @app.route('/api/paintings')
 def get_paintings():
     conn = get_db_connection()
     paintings = conn.execute('SELECT * FROM paintings').fetchall()
     conn.close()
     return jsonify([dict(row) for row in paintings])
+
+@app.route('/api/check-auth')
+def check_auth():
+    return jsonify({"logged_in": session.get('admin_logged_in', False)})
 
 @app.route('/api/painting/<int:painting_id>')
 def get_painting(painting_id):
@@ -138,6 +156,7 @@ def get_painting(painting_id):
     return jsonify({"error": "Not found"}), 404
 
 @app.route('/api/stats')
+@login_required
 def get_stats():
     range_param = request.args.get('range', 'month')
     conn = get_db_connection()
@@ -208,8 +227,83 @@ def get_stats():
         ORDER BY hour
     ''').fetchall()
     
-    # 8. Средний маршрут (заглушка – можно заменить реальными данными)
-    average_route = ["Зал импрессионистов", "Классическая живопись", "Современное искусство", "Скульптуры"]
+    # 8. Построение среднего маршрута по картинам (на основе последовательностей пользователей)
+    # Получаем все посещения за период с нужными полями
+    visits_rows = conn.execute(f'''
+        SELECT user_id, painting_id, visit_time
+        FROM visits
+        {date_filter}
+        ORDER BY user_id, visit_time
+    ''').fetchall()
+    
+    # Группируем по user_id
+    user_dict = defaultdict(list)
+    for row in visits_rows:
+        user_dict[row['user_id']].append((row['visit_time'], row['painting_id']))
+    
+    # Для каждого пользователя строим последовательность уникальных картин в порядке первого посещения
+    user_sequences = []
+    for user_id, visits_list in user_dict.items():
+        # visits_list уже отсортирован благодаря ORDER BY в запросе
+        seen = set()
+        seq = []
+        for _, pid in visits_list:
+            if pid not in seen:
+                seen.add(pid)
+                seq.append(pid)
+        if len(seq) >= 2:  # только если пользователь посетил хотя бы две разные картины
+            user_sequences.append(seq)
+    
+    # Если последовательностей достаточно, строим цепочку переходов
+    avg_paintings_route = []
+    if user_sequences:
+        # Определяем самую частую первую картину
+        first_paintings = Counter(seq[0] for seq in user_sequences if seq)
+        if first_paintings:
+            most_common_first = first_paintings.most_common(1)[0][0]
+            route_ids = [most_common_first]
+            
+            # Построение следующих шагов
+            for _ in range(10):  # максимум 10 шагов
+                current = route_ids[-1]
+                # Считаем переходы из current
+                transitions = Counter()
+                for seq in user_sequences:
+                    try:
+                        idx = seq.index(current)
+                        if idx + 1 < len(seq):
+                            transitions[seq[idx + 1]] += 1
+                    except ValueError:
+                        continue
+                if not transitions:
+                    break
+                next_id = transitions.most_common(1)[0][0]
+                # Избегаем зацикливания (если картина уже есть в маршруте)
+                if next_id in route_ids:
+                    break
+                route_ids.append(next_id)
+            
+            # Получаем данные картин для этих id
+            if route_ids:
+                placeholders = ','.join('?' for _ in route_ids)
+                paintings_route = conn.execute(f'''
+                    SELECT id, title_ru, title_en
+                    FROM paintings
+                    WHERE id IN ({placeholders})
+                ''', route_ids).fetchall()
+                
+                # Создаём словарь для быстрого доступа
+                paintings_dict = {p['id']: p for p in paintings_route}
+                
+                # Формируем результат в порядке маршрута
+                for pid in route_ids:
+                    p = paintings_dict.get(pid)
+                    if p:
+                        avg_paintings_route.append({
+                            "id": p['id'],
+                            "title_ru": p['title_ru'],
+                            "title_en": p['title_en']
+                        })
     
     conn.close()
     
@@ -242,7 +336,8 @@ def get_stats():
             "avg_duration_minutes": round(row["avg_duration"] / 60, 1) if row["avg_duration"] else 0
         } for row in attention],
         "hourly_stats": {"labels": hours, "data": visit_counts},
-        "average_route": average_route
+        "average_route": ["Зал импрессионистов", "Классическая живопись", "Современное искусство", "Скульптуры"],  # можно оставить или удалить
+        "average_paintings_route": avg_paintings_route  # новое поле
     })
 
 @app.route('/api/search')
