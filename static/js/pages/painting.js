@@ -4,22 +4,22 @@ import { parseFacts } from '../utils.js';
 import { stopCarousel } from '../carousel.js';
 
 export async function renderPaintingDetail(container, id) {
-  const t = translations[currentLang];
-  stopCarousel(); // остановка карусели при открытии детальной страницы
+	const t = translations[currentLang];
+	stopCarousel(); // остановка карусели при открытии детальной страницы
 
-  try {
-    const p = await fetchPainting(id);
-    const lang = currentLang;
-    
-    p.title = p[`title_${lang}`] || p.title_en;
-    p.author = p[`author_${lang}`] || p.author_en;
-    p.description = p[`description_${lang}`] || p.description_en;
-    p.drawing_technique = p[`drawing_technique_${lang}`] || p.drawing_technique_en;
-    p.art_direction = p[`art_direction_${lang}`] || p.art_direction_en;
-    const factsRaw = p[`facts_${lang}`] || p.facts_en;
-    p.facts = parseFacts(factsRaw);
+	try {
+		const p = await fetchPainting(id);
+		const lang = currentLang;
 
-    container.innerHTML = `
+		p.title = p[`title_${lang}`] || p.title_en;
+		p.author = p[`author_${lang}`] || p.author_en;
+		p.description = p[`description_${lang}`] || p.description_en;
+		p.drawing_technique = p[`drawing_technique_${lang}`] || p.drawing_technique_en;
+		p.art_direction = p[`art_direction_${lang}`] || p.art_direction_en;
+		const factsRaw = p[`facts_${lang}`] || p.facts_en;
+		p.facts = parseFacts(factsRaw);
+
+		container.innerHTML = `
       <div class="painting-detail">
         <div class="container">
           <button onclick="router('home')" class="btn-back">${t['btn.back']}</button>
@@ -52,7 +52,7 @@ export async function renderPaintingDetail(container, id) {
         </div>
       </div>
     `;
-  } catch (e) {
-    container.innerHTML = '<h2>Ошибка загрузки картины</h2>';
-  }
+	} catch (e) {
+		container.innerHTML = '<h2>Ошибка загрузки картины</h2>';
+	}
 }

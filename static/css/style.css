@@ -969,6 +969,173 @@ body {
     cursor: pointer;
 }
 
+/* Обёртка: ось Y + график */
+.chart-inner {
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+    height: 300px;
+    padding: 10px 0 20px;
+}
+
+/* Ось Y слева */
+.y-axis {
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: space-between;
+    height: 100%;
+    width: 40px;
+    font-size: 11px;
+    color: var(--gray-500);
+    text-align: right;
+    padding-right: 4px;
+    user-select: none;
+    flex-shrink: 0;
+}
+
+.y-axis-label {
+    line-height: 1;
+    opacity: 0.8;
+}
+
+/* Контейнер столбцов */
+.chart-bars {
+    flex: 1;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-around;
+    height: 100%;
+    padding: 20px 20px 0 20px;
+    /* убрали padding-bottom */
+    background: var(--gray-50);
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border-left: 1px solid var(--gray-200);
+    padding-left: 16px;
+    box-sizing: border-box;
+    position: relative;
+    overflow: hidden;
+    /* чтобы столбцы не вылезали */
+}
+
+/* Группа столбца */
+.bar-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    height: 100%;
+    justify-content: flex-end;
+    /* прижимаем к низу */
+    position: relative;
+}
+
+/* Сам столбец */
+.bar {
+    width: 100%;
+    max-width: 50px;
+    background: linear-gradient(to top, var(--accent-gold), var(--accent-brown));
+    border-radius: 6px 6px 0 0;
+    transition: var(--transition-base);
+    min-height: 0;
+    /* 🔥 ВАЖНО: разрешаем высоту 0% */
+    height: 0;
+    /* будет переопределено inline-стилем */
+    position: relative;
+    cursor: default;
+}
+
+.bar:hover {
+    opacity: 0.8;
+    transform: scaleY(1.05);
+    transform-origin: bottom;
+}
+
+/* Тултип */
+.bar:hover::after {
+    content: attr(data-value) " пос.";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-8px);
+    background: var(--gray-900);
+    color: white;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 10;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    animation: fadeIn 0.15s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(-8px);
+    }
+}
+
+.bar-label {
+    font-size: 12px;
+    color: var(--gray-600);
+    font-weight: 500;
+}
+
+/* Фильтр */
+.chart-filter {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 15px;
+    padding: 0 20px;
+}
+
+.chart-filter label {
+    font-size: 14px;
+    color: var(--gray-700);
+}
+
+.filter-select {
+    padding: 10px 20px;
+    border: 1px solid var(--gray-300);
+    border-radius: 6px;
+    background: white;
+    font-family: var(--font-sans);
+    font-size: 14px;
+    color: var(--gray-800);
+    cursor: pointer;
+}
+
+/* Адаптив */
+@media (max-width: 640px) {
+    .chart-inner {
+        height: 250px;
+        gap: 8px;
+    }
+
+    .y-axis {
+        width: 32px;
+        font-size: 10px;
+    }
+
+    .bar-label {
+        font-size: 10px;
+    }
+
+    .chart-bars {
+        padding-left: 12px;
+    }
+}
+
 /* ===== FOOTER ===== */
 .footer {
     background: linear-gradient(135deg, var(--gray-900) 0%, var(--gray-950) 100%);

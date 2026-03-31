@@ -17,7 +17,6 @@ def init_db():
     conn = sqlite3.connect('database.db')
     cursor = conn.cursor()
     
-    # Таблица картин
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS paintings (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -49,7 +48,6 @@ def init_db():
         )
     ''')
     
-    # Таблица посещений
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS visits (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -61,13 +59,11 @@ def init_db():
         )
     ''')
     
-    # Проверяем, есть ли колонка user_id (для старых БД)
     cursor.execute("PRAGMA table_info(visits)")
     columns = [col[1] for col in cursor.fetchall()]
     if 'user_id' not in columns:
         cursor.execute("ALTER TABLE visits ADD COLUMN user_id TEXT")
     
-    # Заполнение тестовыми данными, если таблица картин пуста
     cursor.execute('SELECT COUNT(*) FROM paintings')
     if cursor.fetchone()[0] == 0:
         paintings_data = [
@@ -161,7 +157,6 @@ def get_stats():
     range_param = request.args.get('range', 'month')
     conn = get_db_connection()
     
-    # Определяем временной фильтр
     date_filter = ""
     if range_param == 'today':
         date_filter = "WHERE visit_time >= date('now')"
@@ -171,32 +166,26 @@ def get_stats():
         date_filter = "WHERE visit_time >= datetime('now', '-30 days')"
     elif range_param == 'year':
         date_filter = "WHERE visit_time >= datetime('now', '-1 year')"
-    # else 'all' – без фильтра
     
-    # 1. Общее количество посещений
     total_visits = conn.execute(f'''
         SELECT COUNT(*) FROM visits
         {date_filter}
     ''').fetchone()[0]
     
-    # 2. Уникальные пользователи
     unique_users = conn.execute(f'''
         SELECT COUNT(DISTINCT user_id) FROM visits
         {date_filter}
     ''').fetchone()[0]
     
-    # 3. Средняя длительность просмотра (секунды)
     avg_duration = conn.execute(f'''
         SELECT AVG(duration_seconds) FROM visits
         {date_filter}
     ''').fetchone()[0] or 0
     
-    # 4. Среднее количество картин на пользователя
     paintings_per_user = 0
     if unique_users > 0:
         paintings_per_user = total_visits / unique_users
     
-    # 5. Популярные картины по количеству просмотров
     popular = conn.execute(f'''
         SELECT p.id, p.title_ru, p.title_en, p.author_ru, p.author_en, COUNT(v.id) as view_count
         FROM paintings p
@@ -207,7 +196,6 @@ def get_stats():
         LIMIT 5
     ''').fetchall()
     
-    # 6. Картины по задержке внимания (среднее время просмотра)
     attention = conn.execute(f'''
         SELECT p.id, p.title_ru, p.title_en, p.author_ru, p.author_en, AVG(v.duration_seconds) as avg_duration
         FROM paintings p
@@ -218,7 +206,6 @@ def get_stats():
         LIMIT 5
     ''').fetchall()
     
-    # 7. Почасовая статистика
     hourly_stats = conn.execute(f'''
         SELECT strftime('%H', visit_time) as hour, COUNT(*) as count
         FROM visits
@@ -227,8 +214,6 @@ def get_stats():
         ORDER BY hour
     ''').fetchall()
     
-    # 8. Построение среднего маршрута по картинам (на основе последовательностей пользователей)
-    # Получаем все посещения за период с нужными полями
     visits_rows = conn.execute(f'''
         SELECT user_id, painting_id, visit_time
         FROM visits
@@ -236,37 +221,30 @@ def get_stats():
         ORDER BY user_id, visit_time
     ''').fetchall()
     
-    # Группируем по user_id
     user_dict = defaultdict(list)
     for row in visits_rows:
         user_dict[row['user_id']].append((row['visit_time'], row['painting_id']))
     
-    # Для каждого пользователя строим последовательность уникальных картин в порядке первого посещения
     user_sequences = []
     for user_id, visits_list in user_dict.items():
-        # visits_list уже отсортирован благодаря ORDER BY в запросе
         seen = set()
         seq = []
         for _, pid in visits_list:
             if pid not in seen:
                 seen.add(pid)
                 seq.append(pid)
-        if len(seq) >= 2:  # только если пользователь посетил хотя бы две разные картины
+        if len(seq) >= 2:
             user_sequences.append(seq)
     
-    # Если последовательностей достаточно, строим цепочку переходов
     avg_paintings_route = []
     if user_sequences:
-        # Определяем самую частую первую картину
         first_paintings = Counter(seq[0] for seq in user_sequences if seq)
         if first_paintings:
             most_common_first = first_paintings.most_common(1)[0][0]
             route_ids = [most_common_first]
             
-            # Построение следующих шагов
-            for _ in range(10):  # максимум 10 шагов
+            for _ in range(10):
                 current = route_ids[-1]
-                # Считаем переходы из current
                 transitions = Counter()
                 for seq in user_sequences:
                     try:
@@ -278,12 +256,10 @@ def get_stats():
                 if not transitions:
                     break
                 next_id = transitions.most_common(1)[0][0]
-                # Избегаем зацикливания (если картина уже есть в маршруте)
                 if next_id in route_ids:
                     break
                 route_ids.append(next_id)
             
-            # Получаем данные картин для этих id
             if route_ids:
                 placeholders = ','.join('?' for _ in route_ids)
                 paintings_route = conn.execute(f'''
@@ -292,10 +268,8 @@ def get_stats():
                     WHERE id IN ({placeholders})
                 ''', route_ids).fetchall()
                 
-                # Создаём словарь для быстрого доступа
                 paintings_dict = {p['id']: p for p in paintings_route}
                 
-                # Формируем результат в порядке маршрута
                 for pid in route_ids:
                     p = paintings_dict.get(pid)
                     if p:
@@ -307,7 +281,6 @@ def get_stats():
     
     conn.close()
     
-    # Подготовка данных для часов
     hours = [f"{h:02d}:00" for h in range(24)]
     visit_counts = [0] * 24
     for stat in hourly_stats:
@@ -336,8 +309,8 @@ def get_stats():
             "avg_duration_minutes": round(row["avg_duration"] / 60, 1) if row["avg_duration"] else 0
         } for row in attention],
         "hourly_stats": {"labels": hours, "data": visit_counts},
-        "average_route": ["Зал импрессионистов", "Классическая живопись", "Современное искусство", "Скульптуры"],  # можно оставить или удалить
-        "average_paintings_route": avg_paintings_route  # новое поле
+        "average_route": ["Зал импрессионистов", "Классическая живопись", "Современное искусство", "Скульптуры"],
+        "average_paintings_route": avg_paintings_route
     })
 
 @app.route('/api/search')
@@ -356,7 +329,7 @@ def log_visit():
     data = request.json
     painting_id = data.get('painting_id')
     duration = data.get('duration', 300)
-    user_id = data.get('user_id', 'anonymous')  # если нет – ставим заглушку
+    user_id = data.get('user_id', 'anonymous')
     
     conn = get_db_connection()
     conn.execute('''
@@ -364,7 +337,6 @@ def log_visit():
         VALUES (?, datetime('now'), ?, ?)
     ''', (painting_id, duration, user_id))
     
-    # Обновляем счётчик просмотров в таблице paintings
     conn.execute('''
         UPDATE paintings SET views = views + 1 WHERE id = ?
     ''', (painting_id,))
