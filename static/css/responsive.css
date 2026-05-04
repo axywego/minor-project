@@ -1,0 +1,170 @@
+@media (max-width: 1024px) {
+    .detail-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .stat-card.large,
+    .stat-card.full-width {
+        grid-column: span 1;
+    }
+
+    .hero-title {
+        font-size: 42px;
+    }
+
+    .hero-stats {
+        flex-direction: column;
+        gap: 30px;
+    }
+
+    .stat-content {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 768px) {
+    .header-content {
+        flex-wrap: wrap;
+    }
+
+    .search-box {
+        order: 3;
+        max-width: 100%;
+        width: 100%;
+    }
+
+    .nav {
+        display: none;
+    }
+
+    .hero-title {
+        font-size: 32px;
+    }
+
+    .section-title {
+        font-size: 32px;
+    }
+
+    .paintings-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .footer-content {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+
+    .social-links {
+        justify-content: center;
+    }
+
+    .stats-row {
+        grid-template-columns: 1fr;
+    }
+
+    .carousel-nav {
+        gap: 15px;
+    }
+
+    .carousel-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
+    }
+
+    .carousel-dot {
+        width: 10px;
+        height: 10px;
+    }
+
+    .carousel-progress {
+        max-width: 300px;
+    }
+
+    .chart-inner {
+        height: 250px;
+    }
+
+    .y-axis {
+        width: 40px;
+        font-size: 10px;
+    }
+
+    .bar-label {
+        font-size: 9px;
+        transform: rotate(-45deg);
+        transform-origin: top left;
+        margin-top: 5px;
+    }
+
+    .bar-wrapper {
+        max-width: 35px;
+    }
+}
+
+@media (max-width: 640px) {
+    .chart-inner {
+        height: 250px;
+        gap: 8px;
+    }
+
+    .y-axis {
+        width: 32px;
+        font-size: 10px;
+    }
+
+    .bar-label {
+        font-size: 10px;
+    }
+
+    .chart-bars {
+        padding-left: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 0 15px;
+    }
+
+    .hero {
+        padding: 60px 0;
+    }
+
+    .hero-title {
+        font-size: 28px;
+    }
+
+    .hero-subtitle {
+        font-size: 16px;
+    }
+
+    .section-title {
+        font-size: 26px;
+    }
+
+    .painting-title {
+        font-size: 32px;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+    }
+
+    .chart-inner {
+        height: 200px;
+    }
+
+    .y-axis {
+        width: 35px;
+        font-size: 9px;
+    }
+
+    .bar-label {
+        display: none;
+    }
+}

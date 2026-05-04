@@ -1,0 +1,16 @@
+/* Main CSS file - imports all modules */
+
+@import 'variables.css';
+@import 'reset.css';
+@import 'header.css';
+@import 'hero.css';
+@import 'cards.css';
+@import 'map.css';
+@import 'painting-detail.css';
+@import 'stats.css';
+@import 'carousel.css';
+@import 'search.css';
+@import 'modal.css';
+@import 'footer.css';
+@import 'responsive.css';
+@import 'filtres.css'

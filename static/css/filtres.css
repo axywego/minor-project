@@ -1,0 +1,338 @@
+/* Секция фильтров */
+.filters-section {
+    padding: 20px 40px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.filters-container {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Кнопка включения фильтров */
+.toggle-filters-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 24px;
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #555;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    margin-left: auto;
+    position: relative;
+    overflow: hidden;
+}
+
+.toggle-filters-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, #000000, #4d4d4d);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.toggle-filters-btn:hover {
+    border-color: #3e3e3e;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.15);
+    color: #000000;
+}
+
+.toggle-filters-btn.active {
+    background: linear-gradient(135deg, #000000, #4d4d4d);
+    border-color: #b6b6b6;
+    color: white;
+    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+}
+
+.toggle-filters-btn span {
+    position: relative;
+    z-index: 1;
+}
+
+.toggle-filters-btn.active::before {
+    opacity: 1;
+}
+
+.filter-icon {
+    font-size: 1.2rem;
+    transition: transform 0.3s ease;
+}
+
+.toggle-filters-btn.active .filter-icon {
+    transform: rotate(90deg);
+}
+
+.filter-badge {
+    background: #667eea;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    min-width: 20px;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+}
+
+.toggle-filters-btn.active .filter-badge {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* Панель фильтров */
+.filters-panel {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: flex-end;
+    background: white;
+    border-radius: 12px;
+    margin-top: 0;
+    padding: 0;
+}
+
+.filters-panel.visible {
+    max-height: 500px;
+    opacity: 1;
+    margin-top: 20px;
+    padding: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    border: 1px solid #e9ecef;
+}
+
+/* Группы фильтров */
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+    min-width: 180px;
+}
+
+.filter-group label {
+    font-size: 0.8rem;
+    color: #888;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+
+.filter-select {
+    padding: 10px 14px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    background: white;
+    font-size: 0.9rem;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23666' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 36px;
+}
+
+.filter-select:hover {
+    border-color: #667eea;
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+}
+
+/* Диапазон годов */
+.year-range {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.year-range span {
+    color: #888;
+    font-weight: 500;
+}
+
+.year-input {
+    padding: 10px 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    width: 90px;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.year-input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+}
+
+.year-input::placeholder {
+    color: #bbb;
+}
+
+/* Кнопка сброса */
+.clear-filters-btn {
+    padding: 10px 20px;
+    background: white;
+    color: #dc3545;
+    border: 2px solid #ffc9c9;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.clear-filters-btn:hover {
+    background: #dc3545;
+    color: white;
+    border-color: #dc3545;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.2);
+}
+
+/* Теги активных фильтров */
+.active-filters-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 15px;
+}
+
+.filter-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.08), rgba(118, 75, 162, 0.08));
+    color: #667eea;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    border: 1px solid rgba(102, 126, 234, 0.15);
+}
+
+.tag-remove {
+    background: none;
+    border: none;
+    color: #667eea;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    opacity: 0.6;
+    transition: all 0.2s ease;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.tag-remove:hover {
+    opacity: 1;
+    background: rgba(102, 126, 234, 0.1);
+}
+
+/* Нет результатов */
+.no-results {
+    text-align: center;
+    padding: 80px 20px;
+}
+
+.no-results-icon {
+    font-size: 4rem;
+    margin-bottom: 20px;
+}
+
+.no-results-text {
+    font-size: 1.3rem;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.no-results-hint {
+    color: #666;
+    margin-bottom: 25px;
+}
+
+.reset-filters-btn {
+    padding: 12px 30px;
+    background: linear-gradient(135deg, #000000, #4d4d4d);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.reset-filters-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+/* Стили для карточек */
+.card-direction {
+    font-size: 0.8rem;
+    color: #888;
+    margin-top: 4px;
+    font-style: italic;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .filters-section {
+        padding: 15px 20px;
+    }
+    
+    .filters-panel {
+        flex-direction: column;
+    }
+    
+    .filters-panel.visible {
+        padding: 15px;
+    }
+    
+    .filter-group {
+        min-width: 100%;
+    }
+    
+    .filter-select {
+        width: 100%;
+    }
+    
+    .year-range {
+        flex-wrap: wrap;
+    }
+    
+    .year-input {
+        width: 100%;
+        flex: 1;
+    }
+    
+    .toggle-filters-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}

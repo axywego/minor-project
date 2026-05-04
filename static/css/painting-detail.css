@@ -1,0 +1,465 @@
+.painting-detail {
+    padding: 60px 0;
+    background: var(--gray-50);
+    min-height: calc(100vh - 300px);
+}
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 50px;
+    margin-bottom: 80px;
+}
+
+.slideshow-container {
+    background: white;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: var(--shadow-md);
+}
+
+.main-image {
+    margin-bottom: 20px;
+}
+
+.image-frame {
+    border: 8px solid var(--gray-200);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--gray-900);
+}
+
+.image-placeholder.large {
+    min-height: 500px;
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    color: var(--gray-300);
+}
+
+.image-placeholder.large p {
+    font-family: var(--font-serif);
+    font-size: 28px;
+    margin-top: 20px;
+}
+
+.slideshow-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+
+.control-btn {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    border: 2px solid var(--gray-400);
+    background: white;
+    cursor: pointer;
+    font-size: 18px;
+    color: var(--gray-700);
+    transition: var(--transition-fast);
+}
+
+.control-btn:hover {
+    background: var(--accent-gold);
+    border-color: var(--accent-gold);
+    color: var(--gray-950);
+}
+
+.thumbnails {
+    display: flex;
+    gap: 10px;
+}
+
+.thumbnail {
+    width: 70px;
+    height: 70px;
+    border-radius: 6px;
+    background: var(--gray-300);
+    cursor: pointer;
+    border: 3px solid transparent;
+    transition: var(--transition-fast);
+}
+
+.thumbnail:hover,
+.thumbnail.active {
+    border-color: var(--accent-gold);
+}
+
+.info-card {
+    background: white;
+    border-radius: 12px;
+    padding: 40px;
+    box-shadow: var(--shadow-md);
+}
+
+.painting-title {
+    font-family: var(--font-serif);
+    font-size: 42px;
+    font-weight: 400;
+    color: var(--gray-900);
+    margin-bottom: 10px;
+}
+
+.painting-author {
+    font-size: 20px;
+    color: var(--gray-600);
+    margin-bottom: 30px;
+    font-style: italic;
+}
+
+.info-details {
+    margin-bottom: 30px;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 0;
+    border-bottom: 1px solid var(--gray-200);
+}
+
+.detail-row:last-child {
+    border-bottom: none;
+}
+
+.detail-label {
+    font-weight: 500;
+    color: var(--gray-700);
+}
+
+.detail-value {
+    color: var(--gray-900);
+    font-weight: 400;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 15px;
+}
+
+.btn {
+    flex: 1;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 6px;
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    letter-spacing: 0.5px;
+}
+
+.btn-primary {
+    background: var(--accent-gold);
+    color: var(--gray-950);
+}
+
+.btn-primary:hover {
+    background: var(--accent-gold-hover);
+}
+
+.btn-secondary {
+    background: var(--gray-200);
+    color: var(--gray-800);
+}
+
+.btn-secondary:hover {
+    background: var(--gray-300);
+}
+
+.facts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+}
+
+.fact-card {
+    background: white;
+    border-radius: 12px;
+    padding: 35px;
+    box-shadow: var(--shadow-md);
+    transition: var(--transition-base);
+}
+
+.fact-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+}
+
+.fact-icon {
+    font-size: 40px;
+    margin-bottom: 15px;
+}
+
+.fact-card h3 {
+    font-family: var(--font-serif);
+    font-size: 22px;
+    color: var(--gray-900);
+    margin-bottom: 12px;
+}
+
+.fact-card p {
+    font-size: 16px;
+    font-weight: bold;
+    color: var(--gray-800);
+    line-height: 1.7;
+}
+
+/* Модальное окно */
+.image-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.modal-close {
+    position: absolute;
+    top: 20px;
+    right: 40px;
+    color: #fff;
+    font-size: 40px;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 10000;
+    transition: 0.3s;
+}
+
+.modal-close:hover {
+    color: #bbb;
+}
+
+.modal-content {
+    max-width: 90%;
+    max-height: 90vh;
+    object-fit: contain;
+    cursor: default;
+    animation: zoomIn 0.3s ease;
+}
+
+.modal-caption {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    font-size: 1.2rem;
+    text-align: center;
+}
+
+@keyframes zoomIn {
+    from {
+        transform: scale(0.3);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Подсказка зума */
+.image-frame {
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
+    border-radius: 12px;
+}
+
+.image-frame:hover .zoom-hint {
+    opacity: 1;
+}
+
+.zoom-hint {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.detail-image {
+    width: 100%;
+    border-radius: 8px;
+    transition: transform 0.3s ease;
+}
+
+.image-frame:hover .detail-image {
+    transform: scale(1.02);
+}
+
+/* Секция отзывов */
+.reviews-section {
+    margin-top: 50px;
+    padding: 30px 0;
+    border-top: 1px solid #e0e0e0;
+}
+
+.review-form {
+    background: #f8f9fa;
+    padding: 25px;
+    border-radius: 12px;
+    margin-bottom: 30px;
+}
+
+.rating-input {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.rating-label {
+    font-weight: 500;
+    color: #333;
+}
+
+.stars {
+    display: flex;
+    flex-direction: row-reverse;
+    gap: 5px;
+}
+
+.stars input {
+    display: none;
+}
+
+.stars label {
+    font-size: 2rem;
+    color: #ddd;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.stars input:checked ~ label,
+.stars label:hover,
+.stars label:hover ~ label {
+    color: #ffd700;
+}
+
+.review-input, .review-textarea {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+}
+
+.review-input:focus, .review-textarea:focus {
+    outline: none;
+    border-color: #4a90e2;
+}
+
+.review-textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.btn-submit-review {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-submit-review:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+/* Карточки отзывов */
+.review-card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s;
+}
+
+.review-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.review-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 10px;
+}
+
+.review-author {
+    font-weight: 600;
+    color: #333;
+}
+
+.review-rating {
+    color: #ffd700;
+    font-size: 1.1rem;
+}
+
+.review-date {
+    color: #888;
+    font-size: 0.85rem;
+    margin-left: auto;
+}
+
+.review-text {
+    color: #555;
+    line-height: 1.6;
+}
+
+.review-footer {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.btn-like {
+    background: none;
+    border: 1px solid #e0e0e0;
+    padding: 6px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+}
+
+.btn-like:hover {
+    background: #f0f0f0;
+    border-color: #4a90e2;
+}
+
+.likes-count {
+    font-weight: 600;
+    color: #4a90e2;
+}
+
+.no-reviews {
+    text-align: center;
+    color: #888;
+    padding: 30px;
+    font-style: italic;
+}
