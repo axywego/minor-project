@@ -38,6 +38,7 @@ def init_db():
             text TEXT NOT NULL,
             rating INTEGER NOT NULL DEFAULT 5,
             likes INTEGER DEFAULT 0,
+            approved INTEGER BOOLEAN FALSE,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (painting_id) REFERENCES paintings (id)
         )
@@ -797,6 +798,109 @@ def get_stats():
     
     return jsonify(response)
 
+@app.route('/api/admin/paintings', methods=['POST'])
+@login_required
+def create_painting():
+    data = request.json
+    required = ['title_ru','title_en','title_de','author_ru','author_en','author_de',
+                'year','image_uri','description_ru','description_en','description_de',
+                'facts_ru','facts_en','facts_de','drawing_technique_ru','drawing_technique_en',
+                'drawing_technique_de','dimensions','art_direction_ru','art_direction_en',
+                'art_direction_de']
+    for field in required:
+        if field not in data:
+            return jsonify({"error": f"Missing field: {field}"}), 400
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('''
+        INSERT INTO paintings (title_ru, title_en, title_de, author_ru, author_en, author_de,
+            year, image_uri, description_ru, description_en, description_de,
+            facts_ru, facts_en, facts_de, drawing_technique_ru, drawing_technique_en,
+            drawing_technique_de, dimensions, art_direction_ru, art_direction_en,
+            art_direction_de, map_x, map_y, views, avg_time)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?, ?,?,?)
+    ''', (
+        data['title_ru'], data['title_en'], data['title_de'],
+        data['author_ru'], data['author_en'], data['author_de'],
+        data['year'], data['image_uri'],
+        data['description_ru'], data['description_en'], data['description_de'],
+        data['facts_ru'], data['facts_en'], data['facts_de'],
+        data['drawing_technique_ru'], data['drawing_technique_en'], data['drawing_technique_de'],
+        data['dimensions'],
+        data['art_direction_ru'], data['art_direction_en'], data['art_direction_de'],
+        data.get('map_x', 50.0), data.get('map_y', 50.0), 0, 0
+    ))
+    conn.commit()
+    conn.close()
+    return jsonify({"status": "ok"}), 201
+
+@app.route('/api/admin/paintings/<int:painting_id>', methods=['PUT'])
+@login_required
+def update_painting(painting_id):
+    data = request.json
+    conn = get_db_connection()
+    # Строим динамический UPDATE только по переданным полям
+    allowed = ['title_ru','title_en','title_de','author_ru','author_en','author_de',
+               'year','image_uri','description_ru','description_en','description_de',
+               'facts_ru','facts_en','facts_de','drawing_technique_ru','drawing_technique_en',
+               'drawing_technique_de','dimensions','art_direction_ru','art_direction_en',
+               'art_direction_de','map_x','map_y']
+    updates = {k: data[k] for k in allowed if k in data}
+    if not updates:
+        return jsonify({"error": "No valid fields"}), 400
+    set_clause = ', '.join(f"{k}=?" for k in updates.keys())
+    values = list(updates.values()) + [painting_id]
+    conn.execute(f"UPDATE paintings SET {set_clause} WHERE id=?", values)
+    conn.commit()
+    conn.close()
+    return jsonify({"status": "ok"})
+
+@app.route('/api/admin/paintings/<int:painting_id>', methods=['DELETE'])
+@login_required
+def delete_painting(painting_id):
+    conn = get_db_connection()
+    conn.execute("DELETE FROM paintings WHERE id=?", (painting_id,))
+    # Удаляем связанные отзывы и посещения
+    conn.execute("DELETE FROM reviews WHERE painting_id=?", (painting_id,))
+    conn.execute("DELETE FROM visits WHERE painting_id=?", (painting_id,))
+    conn.commit()
+    conn.close()
+    return jsonify({"status": "ok"})
+
+@app.route('/api/admin/reviews')
+@login_required
+def get_all_reviews():
+    conn = get_db_connection()
+    reviews = conn.execute('''
+        SELECT r.id, r.painting_id, r.author, r.text, r.rating, r.likes,
+               r.approved, r.created_at,
+               p.title_ru, p.title_en
+        FROM reviews r
+        JOIN paintings p ON r.painting_id = p.id
+        ORDER BY r.created_at DESC
+    ''').fetchall()
+    conn.close()
+    return jsonify({"reviews": [dict(row) for row in reviews]})
+
+@app.route('/api/admin/reviews/<int:review_id>/approve', methods=['POST'])
+@login_required
+def approve_review(review_id):
+    conn = get_db_connection()
+    conn.execute("UPDATE reviews SET approved=TRUE WHERE id=?", (review_id,))
+    conn.commit()
+    conn.close()
+    return jsonify({"status": "ok"})
+
+@app.route('/api/admin/reviews/<int:review_id>/reject', methods=['POST'])
+@login_required
+def reject_review(review_id):
+    conn = get_db_connection()
+    conn.execute("DELETE FROM reviews WHERE id=?", (review_id,))
+    conn.commit()
+    conn.close()
+    return jsonify({"status": "ok"})
+
 @app.route('/api/search')
 def search_paintings():
     query = request.args.get('q', '').lower()
@@ -831,32 +935,13 @@ def log_visit():
     
     return jsonify({"status": "ok"})
 
-def init_reviews_table():
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS reviews (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            painting_id INTEGER NOT NULL,
-            author TEXT NOT NULL,
-            text TEXT NOT NULL,
-            rating INTEGER NOT NULL DEFAULT 5,
-            likes INTEGER DEFAULT 0,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (painting_id) REFERENCES paintings (id)
-        )
-    ''')
-    conn.commit()
-    conn.close()
-
-# ========== API ОТЗЫВОВ ==========
 @app.route('/api/reviews/<int:painting_id>')
 def get_reviews(painting_id):
     conn = get_db_connection()
     reviews = conn.execute('''
-        SELECT id, author, text, rating, likes, created_at 
-        FROM reviews 
-        WHERE painting_id = ? 
+        SELECT id, author, text, rating, likes, created_at
+        FROM reviews
+        WHERE painting_id = ? AND approved = 1
         ORDER BY created_at DESC
     ''', (painting_id,)).fetchall()
     conn.close()
@@ -894,6 +979,22 @@ def like_review(review_id):
 def pause_carousel():
     """Сигнал что пользователь смотрит картину - не обновлять главную"""
     return jsonify({"status": "ok"})
+
+@app.route('/api/upload', methods=['POST'])
+@login_required
+def upload_file():
+    if 'file' not in request.files:
+        return jsonify({"error": "No file"}), 400
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({"error": "No file"}), 400
+    # Генерируем уникальное имя
+    timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
+    safe_name = f"{timestamp}_{file.filename}"
+    filepath = os.path.join('static', 'images', 'paintings', safe_name)
+    file.save(filepath)
+    url = f"/static/images/paintings/{safe_name}"
+    return jsonify({"url": url})
 
 if __name__ == '__main__':
     init_db()

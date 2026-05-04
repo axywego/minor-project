@@ -1,31 +1,24 @@
 import { loadPaintings } from './api.js';
 import { setupLiveSearch } from './search.js';
 import { router } from './router.js';
-import { checkAuth, showLoginModal } from './admin_auth.js';
+import { checkAuth } from './admin_auth.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
-	checkAuth();
+	// Проверяем, авторизован ли администратор
+	await checkAuth();
+	// Загружаем список картин
 	await loadPaintings();
+	// Инициализируем живой поиск
 	setupLiveSearch();
-	router('home');
-});
 
-document.addEventListener('keydown', (e) => {
-	if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 's') {
-		e.preventDefault();
-		showLoginModal();
+	// Если URL содержит #admin, открываем админку через роутер
+	// (роутер сам проверит авторизацию и покажет модалку, если нужно)
+	if (window.location.hash.startsWith('#admin')) {
+		// Извлекаем путь после "#/" (если есть) или просто "admin"
+		const path = window.location.hash.substring(1).replace(/^\//, '') || 'admin';
+		router(path);
+	} else {
+		// Иначе грузим главную страницу
+		router('home');
 	}
 });
-
-const heroTitle = document.querySelector('.hero-title');
-if (heroTitle) {
-	heroTitle.addEventListener('dblclick', (e) => {
-		e.preventDefault();
-		showLoginModal();
-	});
-}
-
-if (window.location.hash === '#admin') {
-	showLoginModal();
-	history.replaceState(null, null, ' ');
-}

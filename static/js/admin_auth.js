@@ -1,4 +1,4 @@
-import { router } from './router.js';
+import { router, state } from './router.js';  // ← добавлен state
 
 export let isAdminLoggedIn = false;
 
@@ -36,7 +36,7 @@ export async function adminLogin() {
     if (res.ok) {
         isAdminLoggedIn = true;
         closeModal();
-        router('stats');
+        router('admin');   // ← ВОТ ГЛАВНОЕ ИЗМЕНЕНИЕ
     } else {
         alert('Неверный пароль');
     }
@@ -45,7 +45,7 @@ export async function adminLogin() {
 export async function logout() {
     await fetch('/api/logout', { method: 'POST' });
     isAdminLoggedIn = false;
-    if (state.currentView === 'stats') {
+    if (state.currentView?.startsWith('admin')) {   // ← исправлено условие
         router('home');
     }
 }

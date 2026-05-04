@@ -23,7 +23,7 @@ export async function renderPaintingDetail(container, id) {
         container.innerHTML = `
             <div class="painting-detail">
                 <div class="container">
-                    <button onclick="router('home')" class="btn-back">← ${t['btn.back']}</button>
+                    <button onclick="router('home')" class="btn-back">${t['btn.back']}</button>
                     <div class="detail-grid">
                         <div class="slideshow-section">
                             <div class="image-frame" onclick="window.openImageModal('${p.image_uri}', '${p.title}')">
@@ -72,7 +72,7 @@ export async function renderPaintingDetail(container, id) {
                             <div class="rating-input">
                                 <span class="rating-label">${t['reviews.rating'] || 'Оценка'}:</span>
                                 <div class="stars" id="rating-stars">
-                                    ${[5,4,3,2,1].map(i => `
+                                    ${[5, 4, 3, 2, 1].map(i => `
                                         <input type="radio" id="star${i}" name="rating" value="${i}">
                                         <label for="star${i}">★</label>
                                     `).join('')}
@@ -103,13 +103,13 @@ export async function renderPaintingDetail(container, id) {
 
         // Загружаем отзывы
         loadReviews(p.id);
-        
+
         // Глобальные функции для модального окна
-        window.openImageModal = function(imageSrc, title) {
+        window.openImageModal = function (imageSrc, title) {
             const modal = document.getElementById('image-modal');
             const modalImg = document.getElementById('modal-image');
             const caption = document.getElementById('modal-caption');
-            
+
             if (modal && modalImg) {
                 modal.style.display = 'flex';
                 modalImg.src = imageSrc;
@@ -118,7 +118,7 @@ export async function renderPaintingDetail(container, id) {
             }
         };
 
-        window.closeImageModal = function(event) {
+        window.closeImageModal = function (event) {
             if (event && event.target !== event.currentTarget) return;
             const modal = document.getElementById('image-modal');
             if (modal) {
@@ -128,7 +128,7 @@ export async function renderPaintingDetail(container, id) {
         };
 
         // Отправка отзыва
-        window.submitReview = async function(paintingId) {
+        window.submitReview = async function (paintingId) {
             const author = document.getElementById('review-author').value.trim();
             const text = document.getElementById('review-text').value.trim();
             const rating = document.querySelector('input[name="rating"]:checked')?.value || 5;
@@ -153,7 +153,7 @@ export async function renderPaintingDetail(container, id) {
         };
 
         // Лайк отзыва
-        window.likeReviewFunc = async function(reviewId) {
+        window.likeReviewFunc = async function (reviewId) {
             const result = await likeReview(reviewId);
             if (result.status === 'ok') {
                 await loadReviews(p.id);
@@ -184,7 +184,7 @@ async function loadReviews(paintingId) {
             <div class="review-card">
                 <div class="review-header">
                     <span class="review-author">${review.author}</span>
-                    <span class="review-rating">${'★'.repeat(review.rating)}${'☆'.repeat(5-review.rating)}</span>
+                    <span class="review-rating">${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}</span>
                     <span class="review-date">${new Date(review.created_at).toLocaleDateString()}</span>
                 </div>
                 <p class="review-text">${review.text}</p>

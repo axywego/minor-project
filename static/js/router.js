@@ -1,8 +1,10 @@
+// router.js
 import { loadPaintings } from './api.js';
 import { renderHome } from './pages/home.js';
 import { renderPaintingDetail } from './pages/painting.js';
-import { renderStats } from './pages/stats.js';
+import { renderAdmin } from './pages/admin.js';
 import { currentLang } from './i18n.js';
+import { checkAuth, showLoginModal, isAdminLoggedIn } from './admin_auth.js'; // добавлен импорт
 
 export const state = {
 	currentView: 'home',
@@ -24,6 +26,7 @@ export async function router(view, param = null) {
 	state.currentView = view;
 	state.currentParam = param;
 
+	// Трекинг посещения картины
 	if (prevView === 'painting' && view !== 'painting' && currentPaintingStartTime && currentPaintingId) {
 		const duration = Math.round((Date.now() - currentPaintingStartTime) / 1000);
 		fetch('/api/visit', {
@@ -35,6 +38,7 @@ export async function router(view, param = null) {
 		currentPaintingId = null;
 	}
 
+	// Остановка карусели при уходе с home
 	if (view !== 'home') {
 		import('./carousel.js').then(({ stopCarousel }) => stopCarousel());
 	}
@@ -44,6 +48,28 @@ export async function router(view, param = null) {
 		app.innerHTML = '<div class="loader">Загрузка...</div>';
 	}
 
+	// --- Обработка admin-маршрутов ---
+	if (view.startsWith('admin')) {
+		// Сначала проверяем, авторизован ли пользователь
+		await checkAuth();
+
+		if (!isAdminLoggedIn) {
+			// Не авторизован — показываем модалку и остаёмся на текущей странице (home)
+			showLoginModal();
+			// Но чтобы не было пустого экрана, рендерим home
+			await renderHome(app);
+			return;
+		}
+
+		// Авторизован — рендерим админку
+		const parts = view.split('/');
+		const tab = parts[1] || 'stats';
+		const range = new URLSearchParams(window.location.search).get('range') || 'month';
+		await renderAdmin(app, tab, range);
+		return;
+	}
+
+	// --- Обычные маршруты ---
 	switch (view) {
 		case 'home':
 			await renderHome(app);
@@ -53,9 +79,8 @@ export async function router(view, param = null) {
 			currentPaintingStartTime = Date.now();
 			currentPaintingId = param;
 			break;
-		case 'stats':
-			await renderStats(app, 'month');
-			break;
+		default:
+			await renderHome(app);
 	}
 }
 
