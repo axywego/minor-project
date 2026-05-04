@@ -1,6 +1,6 @@
 // pages/paintingDetail.js
 import { translations, currentLang } from '../i18n.js';
-import { fetchPainting, fetchReviews, addReview, likeReview } from '../api.js';
+import { fetchPainting, fetchReviews, addReview } from '../api.js';
 import { parseFacts } from '../utils.js';
 import { stopCarousel } from '../carousel.js';
 
@@ -97,7 +97,6 @@ export async function renderPaintingDetail(container, id) {
             <div class="image-modal" id="image-modal" onclick="window.closeImageModal()">
                 <span class="modal-close" onclick="window.closeImageModal()">✕</span>
                 <img class="modal-content" id="modal-image" src="${p.image_uri}" alt="${p.title}">
-                <div class="modal-caption" id="modal-caption">${p.title}</div>
             </div>
         `;
 
@@ -152,14 +151,6 @@ export async function renderPaintingDetail(container, id) {
             }
         };
 
-        // Лайк отзыва
-        window.likeReviewFunc = async function (reviewId) {
-            const result = await likeReview(reviewId);
-            if (result.status === 'ok') {
-                await loadReviews(p.id);
-            }
-        };
-
     } catch (e) {
         console.error(e);
         container.innerHTML = '<h2>Ошибка загрузки картины</h2>';
@@ -189,9 +180,6 @@ async function loadReviews(paintingId) {
                 </div>
                 <p class="review-text">${review.text}</p>
                 <div class="review-footer">
-                    <button class="btn-like" onclick="window.likeReviewFunc(${review.id})">
-                        👍 <span class="likes-count">${review.likes || 0}</span>
-                    </button>
                 </div>
             </div>
         `).join('');

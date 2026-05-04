@@ -40,13 +40,6 @@ export async function addReview(paintingId, reviewData) {
     return await res.json();
 }
 
-export async function likeReview(reviewId) {
-    const res = await fetch(`/api/reviews/like/${reviewId}`, {
-        method: 'POST'
-    });
-    return await res.json();
-}
-
 // --- Админ: картины ---
 export async function createPainting(data) {
     const res = await fetch('/api/admin/paintings', {

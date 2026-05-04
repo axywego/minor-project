@@ -261,6 +261,7 @@
         transform: scale(0.3);
         opacity: 0;
     }
+
     to {
         transform: scale(1);
         opacity: 1;
@@ -345,13 +346,14 @@
     transition: color 0.2s;
 }
 
-.stars input:checked ~ label,
+.stars input:checked~label,
 .stars label:hover,
-.stars label:hover ~ label {
+.stars label:hover~label {
     color: #ffd700;
 }
 
-.review-input, .review-textarea {
+.review-input,
+.review-textarea {
     width: 100%;
     padding: 12px;
     border: 2px solid #e0e0e0;
@@ -361,7 +363,8 @@
     transition: border-color 0.3s;
 }
 
-.review-input:focus, .review-textarea:focus {
+.review-input:focus,
+.review-textarea:focus {
     outline: none;
     border-color: #4a90e2;
 }

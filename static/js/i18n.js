@@ -1,5 +1,6 @@
 export const translations = {
     ru: {
+        // существующие ключи...
         'nav.home': 'Главная',
         'nav.stats': 'Статистика',
         'footer.contacts': 'Контакты',
@@ -30,9 +31,72 @@ export const translations = {
         'details.dimensions': 'Размеры:',
         'details.art_direction': "Направление:",
         'centimeters': "см",
-        'search_failed': "Ничего не найдено по запросу"
+        'search_failed': "Ничего не найдено по запросу",
+        'reviews.title': "Отзывы",
+        'reviews.leave_review': "Написать отзыв",
+        'reviews.rating': "Оценка",
+        'reviews.your_name': "Ваше имя",
+        'reviews.your_review': "Ваш отзыв...",
+        'reviews.submit': "Отправить",
+        'reviews.no_reviews': "Пока нет отзывов. Будьте первым!",
+        'reviews.loading': "Загрузка отзывов...",
+        'click_to_zoom': "Нажмите для увеличения",
+
+        // === АДМИН-ПАНЕЛЬ ===
+        'admin.panel': 'Админ-панель',
+        'admin.paintings': 'Картины',
+        'admin.reviews': 'Отзывы',
+        'admin.add': 'Добавить картину',
+        'admin.edit': 'Редактировать',
+        'admin.save': 'Сохранить',
+        'admin.create': 'Создать',
+        'admin.cancel': 'Отмена',
+        'admin.confirm_delete': 'Удалить картину?',
+        'admin.title': 'Название',
+        'admin.author': 'Автор',
+        'admin.year': 'Год',
+        'admin.title_field': 'Название',
+        'admin.author_field': 'Автор',
+        'admin.description': 'Описание',
+        'admin.facts': 'Факты',
+        'admin.technique': 'Техника',
+        'admin.direction': 'Направление',
+        'admin.image': 'Изображение',
+        'admin.image_hint': 'Файл загрузится автоматически',
+        'admin.reviews_moderation': 'Модерация отзывов',
+        'admin.approve': 'Одобрить',
+        'admin.reject': 'Отклонить',
+        'admin.confirm_reject': 'Отклонить отзыв?',
+        'admin.painting': 'Картина',
+        'admin.dimensions': 'Размеры',
+
+        // === СТАТИСТИКА (вкладки + графики) ===
+        'stats.tab': 'Статистика',
+        'stats.general': 'Общая информация',
+        'stats.visits': 'Посещений за период',
+        'stats.avg_time': 'Среднее время просмотра',
+        'stats.per_visit': 'Картин за посещение',
+        'stats.route': 'Средний маршрут',
+        'stats.attention': 'По задержке внимания',
+        'stats.timeline': 'Посещаемость',
+        'stats.filter': 'Фильтр по времени:',
+        'stats.by_hours': 'По часам',
+        'stats.by_days': 'По дням',
+        'stats.by_months': 'По месяцам',
+        'stats.by_years': 'По годам',
+        'time.today': 'За сегодня',
+        'time.week': 'За неделю',
+        'time.month': 'За месяц',
+        'time.year': 'За год',
+        'time.all': 'За всё время',
+        'stats.visits_per_hour': 'посещений в час',
+        'stats.visits_per_day': 'посещений в день',
+        'stats.visits_per_month': 'посещений в месяц',
+        'stats.visits_per_year': 'посещений в год'
     },
+
     en: {
+        // ... все существующие en-ключи ...
         'nav.home': 'Home',
         'nav.stats': 'Statistics',
         'footer.contacts': 'Contacts',
@@ -63,9 +127,72 @@ export const translations = {
         'details.dimensions': 'Dimensions:',
         'details.art_direction': "Art direction:",
         'centimeters': "sm",
-        'search_failed': "Nothing found for your request"
+        'search_failed': "Nothing found for your request",
+        'reviews.title': "Reviews",
+        'reviews.leave_review': "Leave review",
+        'reviews.rating': "Grade",
+        'reviews.your_name': "Your name",
+        'reviews.your_review': "Your review...",
+        'reviews.submit': "Submit",
+        'reviews.no_reviews': "There are no reviews yet. Be the first!",
+        'reviews.loading': "Loading reviews...",
+        'click_to_zoom': "Click to enlarge",
+
+        // === ADMIN ===
+        'admin.panel': 'Admin Panel',
+        'admin.paintings': 'Paintings',
+        'admin.reviews': 'Reviews',
+        'admin.add': 'Add Painting',
+        'admin.edit': 'Edit',
+        'admin.save': 'Save',
+        'admin.create': 'Create',
+        'admin.cancel': 'Cancel',
+        'admin.confirm_delete': 'Delete painting?',
+        'admin.title': 'Title',
+        'admin.author': 'Author',
+        'admin.year': 'Year',
+        'admin.title_field': 'Title',
+        'admin.author_field': 'Author',
+        'admin.description': 'Description',
+        'admin.facts': 'Facts',
+        'admin.technique': 'Technique',
+        'admin.direction': 'Direction',
+        'admin.image': 'Image',
+        'admin.image_hint': 'File will be uploaded automatically',
+        'admin.reviews_moderation': 'Review Moderation',
+        'admin.approve': 'Approve',
+        'admin.reject': 'Reject',
+        'admin.confirm_reject': 'Reject review?',
+        'admin.painting': 'Painting',
+        'admin.dimensions': 'Dimensions',
+
+        // === STATISTICS ===
+        'stats.tab': 'Statistics',
+        'stats.general': 'General Info',
+        'stats.visits': 'Visits over period',
+        'stats.avg_time': 'Average viewing time',
+        'stats.per_visit': 'Paintings per visit',
+        'stats.route': 'Average Route',
+        'stats.attention': 'By Attention Span',
+        'stats.timeline': 'Visit Timeline',
+        'stats.filter': 'Filter by time:',
+        'stats.by_hours': 'By Hours',
+        'stats.by_days': 'By Days',
+        'stats.by_months': 'By Months',
+        'stats.by_years': 'By Years',
+        'time.today': 'Today',
+        'time.week': 'Week',
+        'time.month': 'Month',
+        'time.year': 'Year',
+        'time.all': 'All time',
+        'stats.visits_per_hour': 'visits per hour',
+        'stats.visits_per_day': 'visits per day',
+        'stats.visits_per_month': 'visits per month',
+        'stats.visits_per_year': 'visits per year'
     },
+
     de: {
+        // ... существующие de-ключи ...
         'nav.home': 'Startseite',
         'nav.stats': 'Statistiken',
         'footer.contacts': 'Kontakt',
@@ -96,40 +223,101 @@ export const translations = {
         'details.dimensions': 'Abmessungen:',
         'details.art_direction': "Stilrichtung:",
         'centimeters': "cm",
-        'search_failed': "Nichts gefunden für Ihre Anfrage"
+        'search_failed': "Nichts gefunden für Ihre Anfrage",
+        'reviews.title': "Rezensionen",
+        'reviews.leave_review': "Schreiben Sie eine Rezension",
+        'reviews.rating': "Grad",
+        'reviews.your_name': "Ihr Name",
+        'reviews.your_review': "Ihre Bewertung...",
+        'reviews.submit': "Einreichen",
+        'reviews.no_reviews': "Es liegen noch keine Bewertungen vor. Sei der/die Erste!",
+        'reviews.loading': "Bewertungen werden geladen...",
+        'click_to_zoom': "Zum Vergrößern anklicken",
+
+        // === ADMIN ===
+        'admin.panel': 'Admin-Panel',
+        'admin.paintings': 'Gemälde',
+        'admin.reviews': 'Bewertungen',
+        'admin.add': 'Gemälde hinzufügen',
+        'admin.edit': 'Bearbeiten',
+        'admin.save': 'Speichern',
+        'admin.create': 'Erstellen',
+        'admin.cancel': 'Abbrechen',
+        'admin.confirm_delete': 'Gemälde löschen?',
+        'admin.title': 'Titel',
+        'admin.author': 'Künstler',
+        'admin.year': 'Jahr',
+        'admin.title_field': 'Titel',
+        'admin.author_field': 'Künstler',
+        'admin.description': 'Beschreibung',
+        'admin.facts': 'Fakten',
+        'admin.technique': 'Technik',
+        'admin.direction': 'Stilrichtung',
+        'admin.image': 'Bild',
+        'admin.image_hint': 'Datei wird automatisch hochgeladen',
+        'admin.reviews_moderation': 'Bewertungsmoderation',
+        'admin.approve': 'Genehmigen',
+        'admin.reject': 'Ablehnen',
+        'admin.confirm_reject': 'Bewertung ablehnen?',
+        'admin.painting': 'Gemälde',
+        'admin.dimensions': 'Maße',
+
+        // === STATISTIKEN ===
+        'stats.tab': 'Statistiken',
+        'stats.general': 'Allgemeine Info',
+        'stats.visits': 'Besuche im Zeitraum',
+        'stats.avg_time': 'Durchschnittliche Betrachtungszeit',
+        'stats.per_visit': 'Gemälde pro Besuch',
+        'stats.route': 'Durchschnittliche Route',
+        'stats.attention': 'Nach Aufmerksamkeit',
+        'stats.timeline': 'Besuchsverlauf',
+        'stats.filter': 'Nach Zeit filtern:',
+        'stats.by_hours': 'Stündlich',
+        'stats.by_days': 'Täglich',
+        'stats.by_months': 'Monatlich',
+        'stats.by_years': 'Jährlich',
+        'time.today': 'Heute',
+        'time.week': 'Woche',
+        'time.month': 'Monat',
+        'time.year': 'Jahr',
+        'time.all': 'Gesamter Zeitraum',
+        'stats.visits_per_hour': 'Besuche pro Stunde',
+        'stats.visits_per_day': 'Besuche pro Tag',
+        'stats.visits_per_month': 'Besuche pro Monat',
+        'stats.visits_per_year': 'Besuche pro Jahr'
     }
 };
 
 export let currentLang = 'ru';
 
 export function changeLanguage(lang) {
-  if (lang === currentLang) return;
-  const app = document.getElementById('app');
-  app.classList.add('fade-out');
+    if (lang === currentLang) return;
+    const app = document.getElementById('app');
+    app.classList.add('fade-out');
 
-  setTimeout(() => {
-    currentLang = lang;
-    document.documentElement.lang = lang;
+    setTimeout(() => {
+        currentLang = lang;
+        document.documentElement.lang = lang;
 
-    // Обновление статических элементов с data-i18n
-    document.querySelectorAll('[data-i18n]').forEach(el => {
-      const key = el.getAttribute('data-i18n');
-      if (translations[lang][key]) el.textContent = translations[lang][key];
-    });
+        // Обновление статических элементов с data-i18n
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (translations[lang][key]) el.textContent = translations[lang][key];
+        });
 
-    const searchInput = document.getElementById('search-input');
-    if (searchInput) searchInput.placeholder = translations[lang]['search.placeholder'];
+        const searchInput = document.getElementById('search-input');
+        if (searchInput) searchInput.placeholder = translations[lang]['search.placeholder'];
 
-    // Активация кнопки языка
-    document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
-    const activeBtn = document.querySelector(`.lang-btn[data-lang="${lang}"]`);
-    if (activeBtn) activeBtn.classList.add('active');
+        // Активация кнопки языка
+        document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+        const activeBtn = document.querySelector(`.lang-btn[data-lang="${lang}"]`);
+        if (activeBtn) activeBtn.classList.add('active');
 
-    // Перерисовка текущей страницы через роутер
-    import('./router.js').then(({ state, router }) => router(state.currentView, state.currentParam));
+        // Перерисовка текущей страницы через роутер
+        import('./router.js').then(({ state, router }) => router(state.currentView, state.currentParam));
 
-    requestAnimationFrame(() => app.classList.remove('fade-out'));
-  }, 300);
+        requestAnimationFrame(() => app.classList.remove('fade-out'));
+    }, 300);
 }
 
 // Глобальный доступ для вызова из HTML

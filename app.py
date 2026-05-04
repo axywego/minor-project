@@ -37,7 +37,6 @@ def init_db():
             author TEXT NOT NULL,
             text TEXT NOT NULL,
             rating INTEGER NOT NULL DEFAULT 5,
-            likes INTEGER DEFAULT 0,
             approved INTEGER BOOLEAN FALSE,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (painting_id) REFERENCES paintings (id)
@@ -873,7 +872,7 @@ def delete_painting(painting_id):
 def get_all_reviews():
     conn = get_db_connection()
     reviews = conn.execute('''
-        SELECT r.id, r.painting_id, r.author, r.text, r.rating, r.likes,
+        SELECT r.id, r.painting_id, r.author, r.text, r.rating,
                r.approved, r.created_at,
                p.title_ru, p.title_en
         FROM reviews r
@@ -939,7 +938,7 @@ def log_visit():
 def get_reviews(painting_id):
     conn = get_db_connection()
     reviews = conn.execute('''
-        SELECT id, author, text, rating, likes, created_at
+        SELECT id, author, text, rating, created_at
         FROM reviews
         WHERE painting_id = ? AND approved = 1
         ORDER BY created_at DESC
@@ -965,14 +964,6 @@ def add_review(painting_id):
     conn.commit()
     conn.close()
     
-    return jsonify({"status": "ok"})
-
-@app.route('/api/reviews/like/<int:review_id>', methods=['POST'])
-def like_review(review_id):
-    conn = get_db_connection()
-    conn.execute('UPDATE reviews SET likes = likes + 1 WHERE id = ?', (review_id,))
-    conn.commit()
-    conn.close()
     return jsonify({"status": "ok"})
 
 @app.route('/api/pause-carousel', methods=['POST'])
