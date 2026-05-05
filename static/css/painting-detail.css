@@ -466,3 +466,68 @@
     padding: 30px;
     font-style: italic;
 }
+
+@media (max-width: 768px) {
+    .facts-grid {
+        display: flex !important; /* Принудительно меняем на flex */
+        flex-direction: column !important;
+        gap: 15px;
+        padding: 0 10px;
+    }
+    
+    .fact-card {
+        width: 100% !important;
+        padding: 20px;
+        margin: 0;
+    }
+    
+    .fact-card h3 {
+        font-size: 18px;
+    }
+    
+    .fact-card p {
+        font-size: 14px;
+        line-height: 1.5;
+    }
+    
+    .fact-icon {
+        font-size: 30px;
+    }
+}
+
+@media (max-width: 480px) {
+    .facts-grid {
+        gap: 10px;
+        padding: 0 5px;
+    }
+    
+    .fact-card {
+        padding: 15px;
+        border-radius: 8px;
+    }
+    
+    .fact-card h3 {
+        font-size: 16px;
+        margin-bottom: 8px;
+    }
+    
+    .fact-card p {
+        font-size: 13px;
+        line-height: 1.4;
+    }
+    
+    .fact-icon {
+        font-size: 24px;
+        margin-bottom: 10px;
+    }
+    
+    /* Убираем лишние отступы у секции */
+    .facts-section {
+        padding: 20px 0;
+    }
+    
+    .section-title {
+        font-size: 22px;
+        margin-bottom: 20px;
+    }
+}

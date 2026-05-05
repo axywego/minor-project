@@ -30,24 +30,19 @@ export async function renderHome(container) {
     const totalSlides = Math.ceil(filteredPaintings.length / PAINTINGS_PER_PAGE);
     const filterCount = getActiveFiltersCount();
 
+    const quotes = t['hero.quotes'] || [];
+    const randomQuote = quotes.length > 0 
+        ? quotes[Math.floor(Math.random() * quotes.length)] 
+        : { text: '', author: '' }
+
     container.innerHTML = `
         <section class="hero">
             <div class="hero-content">
                 <h1 class="hero-title" data-i18n="hero.title">${t['hero.title']}</h1>
                 <p class="hero-subtitle" data-i18n="hero.subtitle">${t['hero.subtitle']}</p>
-                <div class="hero-stats">
-                    <div class="stat-item">
-                        <span class="stat-number">${paintings.length}+</span>
-                        <span class="stat-label" data-i18n="hero.num_of_paintings">${t['hero.num_of_paintings']}</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number">150</span>
-                        <span class="stat-label" data-i18n="hero.num_of_painters">${t['hero.num_of_painters']}</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number">25</span>
-                        <span class="stat-label" data-i18n="hero.num_of_halls">${t['hero.num_of_halls']}</span>
-                    </div>
+                <div class="hero-quote">
+                    <p class="quote-text">${randomQuote.text}</p>
+                    <p class="quote-author">— ${randomQuote.author}</p>
                 </div>
             </div>
         </section>
@@ -201,7 +196,7 @@ function setupFilterListeners() {
 }
 
 function renderFilters(t) {
-    const options = getFilterOptions();
+    const options = getFilterOptions(currentLang);
     if (!options) return '';
 
     const filterCount = getActiveFiltersCount();

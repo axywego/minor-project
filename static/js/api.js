@@ -87,20 +87,21 @@ export async function rejectReview(reviewId) {
 }
 
 // Получение уникальных значений для фильтров
-export function getFilterOptions() {
+// Получение уникальных значений для фильтров
+export function getFilterOptions(lang = 'ru') {
     if (!paintings.length) return null;
 
-    // Собираем уникальные направления
+    // Собираем уникальные направления на текущем языке
     const directions = [...new Set(paintings.map(p => {
-        return p.art_direction_ru || p.art_direction_en || p.art_direction_de;
+        return p[`art_direction_${lang}`] || p.art_direction_ru || p.art_direction_en;
     }))].filter(Boolean).sort();
 
-    // Собираем уникальные техники
+    // Собираем уникальные техники на текущем языке
     const techniques = [...new Set(paintings.map(p => {
-        return p.drawing_technique_ru || p.drawing_technique_en || p.drawing_technique_de;
+        return p[`drawing_technique_${lang}`] || p.drawing_technique_ru || p.drawing_technique_en;
     }))].filter(Boolean).sort();
 
-    // Собираем года и вычисляем века
+    // Собираем года и вычисляем века (не зависят от языка)
     const years = [...new Set(paintings.map(p => p.year))].filter(Boolean).sort((a, b) => b - a);
     const centuries = [...new Set(years.map(y => Math.ceil(y / 100)))].sort();
 
@@ -240,9 +241,13 @@ export async function uploadImage(file) {
     formData.append('file', file);
     const res = await fetch('/api/upload', {
         method: 'POST',
+        credentials: 'same-origin', // Добавьте эту строку!
         body: formData
     });
-    if (!res.ok) throw new Error('Upload failed');
+    if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.error || 'Upload failed');
+    }
     const data = await res.json();
     return data.url;
 }

@@ -979,10 +979,17 @@ def upload_file():
     file = request.files['file']
     if file.filename == '':
         return jsonify({"error": "No file"}), 400
+    
     # Генерируем уникальное имя
+    from datetime import datetime
+    import os
     timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
     safe_name = f"{timestamp}_{file.filename}"
     filepath = os.path.join('static', 'images', 'paintings', safe_name)
+    
+    # Убедитесь, что папка существует
+    os.makedirs(os.path.dirname(filepath), exist_ok=True)
+    
     file.save(filepath)
     url = f"/static/images/paintings/{safe_name}"
     return jsonify({"url": url})

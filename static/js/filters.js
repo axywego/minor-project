@@ -1,5 +1,6 @@
 // filters.js - Управление состоянием фильтров
 import { applyFilters, resetFilters } from './api.js';
+import { currentLang } from './i18n.js';
 
 export const activeFilters = {
     direction: null,
@@ -50,6 +51,6 @@ export function getActiveFiltersCount() {
     return Object.keys(getActiveFilters()).length;
 }
 
-export function applyActiveFilters(lang = 'ru') {
-    return applyFilters(activeFilters, lang);
+export function applyActiveFilters() {
+    return applyFilters(activeFilters, currentLang);
 }

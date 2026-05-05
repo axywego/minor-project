@@ -9,7 +9,8 @@ import {
 	deletePainting,
 	fetchAllReviews,
 	approveReview,
-	rejectReview
+	rejectReview,
+  uploadImage
 } from '../api.js';
 
 // ====================== ГЛАВНАЯ ФУНКЦИЯ ======================
@@ -358,19 +359,43 @@ async function renderPaintingsTab(container) {
         `;
 
 		// Обработка загрузки изображения
-		window.handleImageUpload = async (input) => {
-			const file = input.files[0];
-			if (!file) return;
-			try {
-				const url = await uploadImage(file);
-				document.querySelector('input[name="image_uri"]').value = url;
-				const preview = document.getElementById('image-preview');
-				preview.src = url;
-				preview.style.display = 'block';
-			} catch (e) {
-				alert('Ошибка загрузки изображения');
-			}
-		};
+        // Обработка загрузки изображения
+    window.handleImageUpload = async (input) => {
+        const file = input.files[0];
+        if (!file) return;
+        
+        // Проверка размера (макс 10MB)
+        // if (file.size > 10 * 1024 * 1024) {
+        //     alert('Файл слишком большой. Максимум 10MB.');
+        //     input.value = '';
+        //     return;
+        // }
+        
+        // Проверка типа файла
+        if (!file.type.startsWith('image/')) {
+            alert('Можно загружать только изображения.');
+            input.value = '';
+            return;
+        }
+        
+        try {
+            // Показываем индикатор загрузки
+            const preview = document.getElementById('image-preview');
+            preview.style.opacity = '0.5';
+            
+            const url = await uploadImage(file);
+            console.log('Изображение загружено:', url);
+            
+            document.querySelector('input[name="image_uri"]').value = url;
+            preview.src = url;
+            preview.style.display = 'block';
+            preview.style.opacity = '1';
+        } catch (e) {
+            console.error('Ошибка загрузки:', e);
+            alert('Ошибка загрузки изображения. Проверьте консоль (F12).');
+            input.value = '';
+        }
+    };
 
 		// Отправка формы
 		document.getElementById('painting-form-inner').onsubmit = async e => {
