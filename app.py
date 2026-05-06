@@ -382,7 +382,7 @@ def login_required(f):
 def api_login():
     data = request.json
     password = data.get('password')
-    if password == 'XxFmh3d9':
+    if password == '12345678':
         session['admin_logged_in'] = True
         return jsonify({"status": "ok"})
     return jsonify({"error": "Invalid password"}), 401

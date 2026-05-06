@@ -93,7 +93,7 @@ export async function renderHome(container) {
             <h2 class="section-title" data-i18n="section.map">${t['section.map']}</h2>
             <div class="map-container">
                 <div class="interactive-map">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Museum_floor_plan.svg/1200px-Museum_floor_plan.svg.png" 
+                    <img src="static/images/map.png" 
                          class="map-bg" alt="Plan">
                     <div id="map-markers"></div>
                 </div>
